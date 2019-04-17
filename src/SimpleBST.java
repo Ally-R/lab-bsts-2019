@@ -61,7 +61,39 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
 
   @Override
   public V set(K key, V value) {
-    // TODO Auto-generated method stub
+    if (key == null) {
+      throw new NullPointerException();
+    } // if key null
+    if (this.root == null) {
+      this.root = new BSTNode<K, V>(key, value);
+      this.size++;
+      return null;
+    } // if tree empty
+    BSTNode<K, V> curr = this.root;
+    while (curr != null) {
+      if (this.comparator.compare(curr.key, key) == 0) {
+        V temp = curr.value;
+        curr.value = value;
+        return temp;
+      } // if curr matches key
+      if (this.comparator.compare(curr.key, key) > 0) {
+        if (curr.left != null) {
+          curr = curr.left;
+        } else {
+          curr.left = new BSTNode<K, V>(key, value);
+          this.size++;
+          return null;
+        } // if/else
+      } else {
+        if (curr.right != null) {
+          curr = curr.right;
+        } else {
+          curr.right = new BSTNode<K, V>(key, value);
+          this.size++;
+          return null;
+        } // if/else
+      } // if/else
+    } // while
     return null;
   } // set(K,V)
 
@@ -137,9 +169,8 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
 
   @Override
   public void forEach(BiConsumer<? super K, ? super V> action) {
-    // TODO Auto-generated method stub
-
-  } // forEach
+    forEach(action, this.root);
+  } // forEach(BiConsumer<? super K, ? super V> action)
 
   // +----------------------+----------------------------------------
   // | Other public methods |
@@ -220,5 +251,17 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
       } // checkInit
     }; // new Iterator
   } // nodes()
+  
+  void forEach(BiConsumer<? super K, ? super V> action, BSTNode<K, V> node) {
+    if (node != null) {
+      action.accept(node.key, node.value);
+      if (node.left != null) {
+        forEach(action, node.left);
+      } // if
+      if (node.right != null) {
+        forEach(action, node.right);
+      } // if
+    } // if not null
+  } // forEach(BiConsumer<? super K, ? super V> action, BSTNode<K, V> node)
 
 } // class SimpleBST
