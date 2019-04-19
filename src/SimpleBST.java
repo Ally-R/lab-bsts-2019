@@ -61,6 +61,7 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
 
   @Override
   public V set(K key, V value) {
+    /*
     if (key == null) {
       throw new NullPointerException();
     } // if key null
@@ -95,7 +96,32 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
       } // if/else
     } // while
     return null;
+    */
+    root = set(root, key, value);
+    return this.cachedValue;
   } // set(K,V)
+  
+  public BSTNode<K, V> set(BSTNode<K, V> node, K key, V value) {
+    if (node == null) {
+      this.cachedValue = null;
+      this.size++;
+      return new BSTNode<K, V>(key, value);
+    } // if node empty
+    int compare = this.comparator.compare(key, node.key);
+    if (compare == 0) {
+      this.cachedValue = node.value;
+      node.value = value;
+      return node;
+    } // if key matches current node
+    else if (compare < 0) {
+      node.left = set(node.left, key, value);
+      return node;
+    } // if key < current node's key
+    else {
+      node.right = set(node.right, key, value);
+      return node;
+    } // if key > current node's key
+  } // set(BSTNode<K, V> node, K key, V value)
 
   @Override
   public V get(K key) {
@@ -119,9 +145,45 @@ public class SimpleBST<K, V> implements SimpleMap<K, V> {
 
   @Override
   public V remove(K key) {
-    // TODO Auto-generated method stub
-    return null;
+    root = remove(root, key);
+    return this.cachedValue;
   } // remove(K)
+  
+  BSTNode<K, V> remove(BSTNode<K, V> node, K key) {
+    if (node == null) {
+      this.cachedValue = null;
+      return null;
+    } // if node is empty
+    this.cachedValue = node.value;
+    int compare = this.comparator.compare(key, node.key);
+    if (compare == 0) {
+      if (node.left == null && node.right == null) {
+        return null;
+      } // if node subtrees are empty
+      else if (node.left == null) {
+        return node.right;
+      } // if left subtree is null
+      else if (node.right == null) {
+        return node.left;
+      } // if right subtree is null
+      else {
+        BSTNode<K, V> temp = node.left;
+        while (temp.right != null) {
+          temp = temp.right;
+        } // while
+        temp.right = node.right;
+        return node.left;
+      } // if both subtrees are full
+    } // if key matches current node's key
+    else if (compare < 0) {
+      node.left = remove(node.left, key);
+      return node;
+    } // if key < current node's key
+    else {
+      node.right = remove(node.right, key);
+      return node;
+    } // if key > current node's key
+  } // remove(BSTNode<K, V> node, K key)
 
   @Override
   public Iterator<K> keys() {
